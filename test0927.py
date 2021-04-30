@@ -20,7 +20,7 @@
 
 import sys  # sysモジュールの呼び出し
 import wiringpi as wi  # wiringPiモジュールの呼び出し
-import sa-bo
+import sa_bo
 import time  # timeライブラリの呼び出し
 import datetime  # datetimeモジュールの呼び出し
 import os
