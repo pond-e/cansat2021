@@ -1,11 +1,14 @@
+import sys  # sysモジュールの呼び出し
+import wiringpi as wi  # wiringPiモジュールの呼び出し
+import time  # timeライブラリの呼び出し
+import datetime  # datetimeモジュールの呼び出し
+import os
+import serial
+import codecs
+import math
+import RPi.GPIO as GPIO
+import numpy as np
 ###############ローバーの設定###################
-houkou_rad = 0.52
-max     = -100
-counter = 0
-count_limit = 50
-h_first     = -1
-counter_h   = 0
-min     = 1000
 GPIO.setmode(GPIO.BCM)
 #GPIO4を出力端子設定
 GPIO.setup(4, GPIO.OUT)
@@ -51,7 +54,7 @@ def north_raspi(mag):
             time.sleep(0.4)
             p1.ChangeDutyCycle(0.0)
         else:
-            #そもまま
+            #そのまま
             dc1 = 0.035
             p1.ChangeDutyCycle(dc1)
             dc2 = 0.115
@@ -67,7 +70,7 @@ def north_raspi(mag):
             time.sleep(0.4)
             p1.ChangeDutyCycle(0.0)
         else:
-            #そもまま
+            #そのまま
             dc1 = 0.035
             p1.ChangeDutyCycle(dc1)
             dc2 = 0.115
@@ -76,7 +79,7 @@ def north_raspi(mag):
             p1.ChangeDutyCycle(0.0)
             p2.ChangeDutyCycle(0.0)
     else:
-        #そもまま
+        #そのまま
         dc1 = 0.035
         p1.ChangeDutyCycle(dc1)
         dc2 = 0.115

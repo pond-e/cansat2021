@@ -583,6 +583,12 @@ def calibGyro(_count=1000):
 ####################mpu9250 date get settings end##################
 if __name__ == '__main__':
 
+    max  = -100
+    counter = 0
+    count_limit = 50
+    h_first = -1
+    counter_h   = 0
+    min = 1000
     # 0=内蔵カメラ
     cap = cv2.VideoCapture(0)
 
