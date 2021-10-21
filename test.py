@@ -1,5 +1,6 @@
 from wpi3_GPS import *
 from wpi3_mpu9250_2 import *
+from wpi3_bme280_2 import *
 import time
 import threading
 
@@ -131,9 +132,32 @@ def mpu_thread():
             break
     f_mpu9250.close()  # 書き込みファイルを閉じる
 
+def bme_thread():
+    #while True:
+	for _i in range(TIMES):
+		try:
+			date = datetime.datetime.now()  #now()メソッドで現在日付・時刻のdatetime型データの変数を取得 世界時：UTCnow
+			now     = time.time()     #現在時刻の取得
+			readData()
+			#ファイルへ書出し
+			value= "%s,%6.2f,%6.2f,%7.2f" % (date, temp,humi,press)      #時間、温度、湿度、気圧
+			f_bme280 .write(value + "\n")       #ファイルを出力
+			#指定秒数の一時停止
+			sleepTime       = SAMPLING_TIME - (time.time() - now)
+			if sleepTime < 0.0:
+				continue
+			time.sleep(sleepTime)
+		except KeyboardInterrupt:
+			pass
+
+	f_bme280 .close()                       #書き込みファイルを閉じる
+
+
 if __name__ == "__main__":
     thread_GPS = threading.Thread(target=GPS_thread)
     thread_mpu = threading.Thread(target=mpu_thread)
+    thread_bme = threading.Thread(target=bme_thread)
     thread_GPS.start()
     thread_mpu.start()
+    thread_bme.start()
 
