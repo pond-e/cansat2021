@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ############################################################
-# Written by S.U @ Takada Laboratory on 2018.03.06
+# Written by pond-e
 #
 # Environment:  Python 3.4.2
 #               OS: Raspbian 8.0 (jessie)

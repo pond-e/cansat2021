@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # coding: utf-8
 ##picameraによる静止画撮影プログラム
-##製作者：A.M＠高田研究室
-##使い方：$ python raspi_picamera_capture_v1.0.py
+##製作者：pond-e
+#使い方：$ python raspi_picamera_capture_v1.0.py
 
 import picamera        #picameraモジュールの呼び出し
 import datetime as dt  #datetimeモジュールの呼び出し
