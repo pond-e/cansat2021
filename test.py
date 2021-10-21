@@ -1,6 +1,5 @@
 from wpi3_GPS import *
-from wpi3_mpu9250_2 import *
-from wpi3_bme280_2 import *
+from cs17_wpi3_2sensors import *
 import time
 import threading
 
@@ -90,7 +89,7 @@ def GPS_thread():
         print(time_and_number + ',' + alt_lat_long)
         f.close()
 
-def mpu_thread():
+def wpi3_2sensors_thread():
     # bus     = smbus.SMBus(1)
     resetRegister()
     powerWakeUp()
@@ -104,25 +103,28 @@ def mpu_thread():
     # ファイルへ書出し準備
     now = datetime.datetime.now()
     # 現在時刻を織り込んだファイル名を生成
-    fmt_name = "/home/pi/data/mpu9250wpi_logs_{0:%Y%m%d-%H%M%S}.csv".format(now)
-    f_mpu9250 = open(fmt_name, 'w')  # 書き込みファイル
-    # f_mpu9250= open('home/pi/data/mpu9250wpi_logs.csv', 'w')    #書き込みファイル
-    value = "yyyy-mm-dd hh:mm:ss.mmmmmm, x[g],y[g],z[g],x[dps],y[dps],z[dps],x[uT],y[uT],z[uT]"  # header行への書き込み内容
-    f_mpu9250.write(value + "\n")  # header行をファイル出力
-    # while True:
-    for _i in range(TIMES):
+    fmt_name = "/home/pi/data/cs17_wpi3_2sensors_logs_{0:%Y%m%d-%H%M%S}.csv".format(now)
+    f_cs17_wpi3_2sensors = codecs.open(fmt_name, mode='w', encoding="utf-8")  # 書き込みファイル
+    # f_cs17_wpi3_2sensors= open('home/pi/data/cs17_wpi3_2sensors_logs.csv', 'w')    #書き込みファイル
+    value = u"yyyy-mm-dd hh:mm:ss.mmmmmm,T[℃],H[%],P[hPa],x[g],y[g],z[g],x[dps],y[dps],z[dps],x[uT],y[uT],z[uT],h[m]"  # header行への書き込み内容
+    f_cs17_wpi3_2sensors.write(value + "\n")  # header行をファイル出力
+    while True:  # データ取得時間制限あり
         try:
+            # for _i in range(TIMES):		#データ取得時間制限なし
             date = datetime.datetime.now()  # now()メソッドで現在日付・時刻のdatetime型データの変数を取得 世界時：UTCnow
             now = time.time()  # 現在時刻の取得
+            readData()
             acc = getAccel()  # 加速度値の取得
             gyr = getGyro()  # ジャイロ値の取得
             mag = getMag()  # 磁気値の取得
-            # データの表示
+            h = (((1013.25 / press) ** (1 / 5.257) - 1) * (temp + 273.15)) / 0.0065
+
             # ファイルへ書出し
-            value = "%s,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f" % (
-            date, acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2], mag[0], mag[1], mag[2])  # 時間、xyz軸回りの加速度
-            print(value)
-            f_mpu9250.write(value + "\n")  # ファイルを出力
+            value = "%s,%6.2f,%6.2f,%7.2f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%6.3f,%4.4f" % (
+            date, temp, humi, press, acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2], mag[0], mag[1], mag[2],
+            h)  # 時間、xyz軸回りの加速度
+            f_cs17_wpi3_2sensors.write(value + "\n")  # ファイルを出力
+            print(value)  # 標準出力
             # 指定秒数の一時停止
             sleepTime = SAMPLING_TIME - (time.time() - now)
             if sleepTime < 0.0:
@@ -130,34 +132,12 @@ def mpu_thread():
             time.sleep(sleepTime)
         except KeyboardInterrupt:
             break
-    f_mpu9250.close()  # 書き込みファイルを閉じる
-
-def bme_thread():
-    #while True:
-	for _i in range(TIMES):
-		try:
-			date = datetime.datetime.now()  #now()メソッドで現在日付・時刻のdatetime型データの変数を取得 世界時：UTCnow
-			now     = time.time()     #現在時刻の取得
-			readData()
-			#ファイルへ書出し
-			value= "%s,%6.2f,%6.2f,%7.2f" % (date, temp,humi,press)      #時間、温度、湿度、気圧
-			f_bme280 .write(value + "\n")       #ファイルを出力
-			#指定秒数の一時停止
-			sleepTime       = SAMPLING_TIME - (time.time() - now)
-			if sleepTime < 0.0:
-				continue
-			time.sleep(sleepTime)
-		except KeyboardInterrupt:
-			pass
-
-	f_bme280 .close()                       #書き込みファイルを閉じる
+    f_cs17_wpi3_2sensors.close()  # 書き込みファイルを閉じる
 
 
 if __name__ == "__main__":
     thread_GPS = threading.Thread(target=GPS_thread)
-    thread_mpu = threading.Thread(target=mpu_thread)
-    thread_bme = threading.Thread(target=bme_thread)
+    thread_2sensors = threading.Thread(target=wpi3_2sensors_thread)
     thread_GPS.start()
-    thread_mpu.start()
-    thread_bme.start()
+    thread_2sensors.start()
 
